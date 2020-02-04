@@ -35,6 +35,12 @@ public class ProgramProcessor extends AbstractProcessor {
         super(dbSession, httpSessionState.getUserId());
     }
 
+    public Program getProgramAndLockTable(String programName, String ownerName, String robotName, String authorName) {
+        ProgramDao programDao = new ProgramDao(this.dbSession);
+        programDao.lockTable();
+        return getProgram(programName, ownerName, robotName, authorName);
+    }
+
     /**
      * load a program from the data base. Either the program is owned by the user with the id given or the program is shared by the user given to the user
      * requesting the program
@@ -79,6 +85,36 @@ public class ProgramProcessor extends AbstractProcessor {
             setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ONE_ERROR_NOT_LOGGED_IN, processorParameters);
             return null;
         }
+    }
+
+    public JSONArray getProgramEntity(String programName, int ownerId, String robotName, int authorId) {
+    
+        if ( isUserLoggedIn() ) {
+            UserDao userDao = new UserDao(this.dbSession);
+            RobotDao robotDao = new RobotDao(this.dbSession);
+            ProgramDao programDao = new ProgramDao(this.dbSession);
+            User owner = userDao.get(ownerId);
+            Robot robot = robotDao.loadRobot(robotName);
+            User author = userDao.get(authorId);
+            Program program = programDao.load(programName, owner, robot, author);
+            if ( program != null ) {
+                setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ONE_SUCCESS, new HashMap<>());
+                JSONArray prog = new JSONArray();
+                prog.put(program.getRobot().getName());
+                prog.put(program.getName());
+                prog.put(program.getProgramText()); // only needed if we want to show the description of the program
+                prog.put(program.getAuthor().getAccount());
+                prog.put(program.getLastChanged().getTime());
+                prog.put(program.getNumberOfViews());
+                prog.put(0);
+                prog.put(program.getTags());
+                return prog;
+            } else {
+                setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ONE_ERROR_NOT_LOGGED_IN, new HashMap<>());
+                return null;
+            }
+        }
+        return null;
     }
 
     /**
@@ -139,7 +175,6 @@ public class ProgramProcessor extends AbstractProcessor {
             JSONArray programInfo = new JSONArray();
             programInfo.put(program.getName());
             programInfo.put(program.getOwner().getAccount());
-            // programInfo.put(program.getNumberOfBlocks());
             List<AccessRight> accessRights = accessRightDao.loadAccessRightsByProgram(program);
             JSONObject sharedWith = new JSONObject();
             try {
@@ -164,22 +199,21 @@ public class ProgramProcessor extends AbstractProcessor {
         List<AccessRight> accessRights2 = accessRightDao.loadAccessRightsForUser(owner, robot);
         for ( AccessRight accessRight : accessRights2 ) {
             // Don't return programs with wrong robot type
-            Program program = programDao.get(accessRight.getProgram().getId());
+            Program program = accessRight.getProgram();
             if ( program != null ) {
-                JSONArray programInfo2 = new JSONArray();
-                programInfo2.put(accessRight.getProgram().getName());
-                programInfo2.put(accessRight.getProgram().getOwner().getAccount());
-                //            programInfo2.put(userProgram.getProgram().getNumberOfBlocks());
+                JSONArray programInfo = new JSONArray();
+                programInfo.put(program.getName());
+                programInfo.put(program.getOwner().getAccount());
                 JSONObject sharedFrom = new JSONObject();
                 try {
                     sharedFrom.put("sharedFrom", accessRight.getRelation().toString());
                 } catch ( JSONException e ) {
                 }
-                programInfo2.put(sharedFrom);
-                programInfo2.put(program.getAuthor().getAccount());
-                programInfo2.put(accessRight.getProgram().getCreated().getTime());
-                programInfo2.put(accessRight.getProgram().getLastChanged().getTime());
-                programInfos.put(programInfo2);
+                programInfo.put(sharedFrom);
+                programInfo.put(program.getAuthor().getAccount());
+                programInfo.put(program.getCreated().getTime());
+                programInfo.put(program.getLastChanged().getTime());
+                programInfos.put(programInfo);
             }
         }
 
@@ -190,11 +224,12 @@ public class ProgramProcessor extends AbstractProcessor {
     }
 
     /**
-     * Find out with whom a program is shared and under which rights
+     * TODO: really needed? No use found in client. Find out with whom a program is shared and under which rights
      *
      * @param programName the name of the program
      * @param ownerId the owner of the program
      */
+    @Deprecated
     public JSONArray getProgramRelations(String programName, int ownerId, String robotName, int authorId) {
         UserDao userDao = new UserDao(this.dbSession);
         ProgramDao programDao = new ProgramDao(this.dbSession);
@@ -255,36 +290,6 @@ public class ProgramProcessor extends AbstractProcessor {
         processorParameters.put("PROGRAMS_LENGTH", "" + programs.length());
         setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ALL_SUCCESS, processorParameters);
         return programs;
-    }
-
-    public JSONArray getProgramEntity(String programName, int ownerId, String robotName, int authorId) {
-
-        if ( isUserLoggedIn() ) {
-            UserDao userDao = new UserDao(this.dbSession);
-            RobotDao robotDao = new RobotDao(this.dbSession);
-            ProgramDao programDao = new ProgramDao(this.dbSession);
-            User owner = userDao.get(ownerId);
-            Robot robot = robotDao.loadRobot(robotName);
-            User author = userDao.get(authorId);
-            Program program = programDao.load(programName, owner, robot, author);
-            if ( program != null ) {
-                setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ONE_SUCCESS, new HashMap<>());
-                JSONArray prog = new JSONArray();
-                prog.put(program.getRobot().getName());
-                prog.put(program.getName());
-                prog.put(program.getProgramText()); // only needed if we want to show the description of the program
-                prog.put(program.getAuthor().getAccount());
-                prog.put(program.getLastChanged().getTime());
-                prog.put(program.getNumberOfViews());
-                prog.put(0);
-                prog.put(program.getTags());
-                return prog;
-            } else {
-                setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ONE_ERROR_NOT_LOGGED_IN, new HashMap<>());
-                return null;
-            }
-        }
-        return null;
     }
 
     /**

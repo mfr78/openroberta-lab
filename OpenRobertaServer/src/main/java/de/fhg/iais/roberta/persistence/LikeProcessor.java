@@ -29,7 +29,7 @@ public class LikeProcessor extends AbstractProcessor {
 
             User gallery = userDao.loadUser("Gallery");
             User author = userDao.loadUser(authorName);
-            User userWhoLike = userDao.loadUser(getIdOfLoggedInUser());
+            User userWhoLikes = userDao.loadUser(getIdOfLoggedInUser());
 
             Robot robot = robotDao.loadRobot(robotName);
             if ( robot == null ) {
@@ -41,7 +41,7 @@ public class LikeProcessor extends AbstractProcessor {
                 setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ONE_ERROR_NOT_FOUND, new HashMap<>());
                 return null;
             }
-            Pair<Key, Like> result = likeDao.persistsLike(userWhoLike, program);
+            Pair<Key, Like> result = likeDao.persistsLike(userWhoLikes, program);
 
             // a bit strange, but necessary as Java has no N-tuple
             if ( result.getFirst() == Key.LIKE_SAVE_SUCCESS ) {
