@@ -17,11 +17,11 @@ import de.fhg.iais.roberta.util.Pair;
 
 public class LikeProcessor extends AbstractProcessor {
     public LikeProcessor(DbSession dbSession, HttpSessionState httpSessionState) {
-        super(dbSession, httpSessionState);
+        super(dbSession, httpSessionState.getUserId());
     }
 
     public Like createLike(String programName, String robotName, String authorName) throws Exception {
-        if ( this.httpSessionState.isUserLoggedIn() ) {
+        if ( isUserLoggedIn() ) {
             ProgramDao programDao = new ProgramDao(this.dbSession);
             UserDao userDao = new UserDao(this.dbSession);
             RobotDao robotDao = new RobotDao(this.dbSession);
@@ -29,7 +29,7 @@ public class LikeProcessor extends AbstractProcessor {
 
             User gallery = userDao.loadUser("Gallery");
             User author = userDao.loadUser(authorName);
-            User userWhoLike = userDao.loadUser(this.httpSessionState.getUserId());
+            User userWhoLike = userDao.loadUser(getIdOfLoggedInUser());
 
             Robot robot = robotDao.loadRobot(robotName);
             if ( robot == null ) {
@@ -64,7 +64,7 @@ public class LikeProcessor extends AbstractProcessor {
 
         User gallery = userDao.loadUser("Gallery");
         User author = userDao.loadUser(authorName);
-        User userWhoLike = userDao.loadUser(this.httpSessionState.getUserId());
+        User userWhoLike = userDao.loadUser(getIdOfLoggedInUser());
 
         Robot robot = robotDao.loadRobot(robotName);
         if ( robot == null ) {

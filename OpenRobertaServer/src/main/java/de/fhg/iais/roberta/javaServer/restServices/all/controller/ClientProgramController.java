@@ -576,7 +576,7 @@ public class ClientProgramController {
                 // generating a unique name for the program owned by the gallery.
                 User user = userProcessor.getUser(userId);
                 String userAccount = user.getAccount();
-                if ( !this.isPublicServer || ((user != null) && user.isActivated()) ) {
+                if ( !this.isPublicServer || user != null && user.isActivated() ) {
                     // get the program from the origin user to share with the gallery
                     Program program = programProcessor.getProgram(programName, userAccount, robot, userAccount);
                     String confText;

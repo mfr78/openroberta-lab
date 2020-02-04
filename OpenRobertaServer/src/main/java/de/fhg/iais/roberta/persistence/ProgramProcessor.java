@@ -32,7 +32,7 @@ public class ProgramProcessor extends AbstractProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(ProgramProcessor.class);
 
     public ProgramProcessor(DbSession dbSession, HttpSessionState httpSessionState) {
-        super(dbSession, httpSessionState);
+        super(dbSession, httpSessionState.getUserId());
     }
 
     /**
@@ -56,7 +56,7 @@ public class ProgramProcessor extends AbstractProcessor {
         if ( !Util.isValidJavaIdentifier(programName) ) {
             setStatus(ProcessorStatus.FAILED, Key.PROGRAM_ERROR_ID_INVALID, processorParameters);
             return null;
-        } else if ( this.httpSessionState.isUserLoggedIn() || owner.getId() < 3 ) {
+        } else if ( isUserLoggedIn() || owner.getId() < 3 ) {
             RobotDao robotDao = new RobotDao(this.dbSession);
             ProgramDao programDao = new ProgramDao(this.dbSession);
             Robot robot = robotDao.loadRobot(robotName);
@@ -232,7 +232,7 @@ public class ProgramProcessor extends AbstractProcessor {
         AccessRightDao accessRightDao = new AccessRightDao(this.dbSession);
 
         // Find whether a program has been shared to the user logged in
-        AccessRight accessRight = accessRightDao.loadAccessRightForUser(this.httpSessionState.getUserId(), programName, ownerId, authorName);
+        AccessRight accessRight = accessRightDao.loadAccessRightForUser(getIdOfLoggedInUser(), programName, ownerId, authorName);
         if ( accessRight == null ) {
             return null;
         } else {
@@ -245,7 +245,7 @@ public class ProgramProcessor extends AbstractProcessor {
      *
      * @param galleryId the gallery user
      */
-    
+
     public JSONArray getProgramGallery(int userId) {
         UserDao userDao = new UserDao(this.dbSession);
         ProgramDao programDao = new ProgramDao(this.dbSession);
@@ -258,8 +258,8 @@ public class ProgramProcessor extends AbstractProcessor {
     }
 
     public JSONArray getProgramEntity(String programName, int ownerId, String robotName, int authorId) {
-    
-        if ( this.httpSessionState.isUserLoggedIn() ) {
+
+        if ( isUserLoggedIn() ) {
             UserDao userDao = new UserDao(this.dbSession);
             RobotDao robotDao = new RobotDao(this.dbSession);
             ProgramDao programDao = new ProgramDao(this.dbSession);
@@ -316,7 +316,7 @@ public class ProgramProcessor extends AbstractProcessor {
             setStatus(ProcessorStatus.FAILED, Key.PROGRAM_ERROR_ID_INVALID, processorParameters);
             return null;
         }
-        if ( this.httpSessionState.isUserLoggedIn() ) {
+        if ( isUserLoggedIn() ) {
             UserDao userDao = new UserDao(this.dbSession);
             RobotDao robotDao = new RobotDao(this.dbSession);
             ProgramDao programDao = new ProgramDao(this.dbSession);

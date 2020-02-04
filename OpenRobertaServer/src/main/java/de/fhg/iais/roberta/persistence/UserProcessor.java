@@ -15,7 +15,7 @@ import de.fhg.iais.roberta.util.Key;
 public class UserProcessor extends AbstractProcessor {
 
     public UserProcessor(DbSession dbSession, HttpSessionState httpSessionState) {
-        super(dbSession, httpSessionState);
+        super(dbSession, httpSessionState.getUserId());
     }
 
     public User getUser(String account) {
@@ -117,7 +117,7 @@ public class UserProcessor extends AbstractProcessor {
             setStatus(ProcessorStatus.FAILED, Key.USER_UPDATE_ERROR_ACCOUNT_WRONG, processorParameters);
         } else {
             User user = getUser(account, oldPassword);
-            if ( user != null && this.httpSessionState.getUserId() == user.getId() ) {
+            if ( user != null && getIdOfLoggedInUser() == user.getId() ) {
                 user.setPassword(newPassword);
                 setStatus(ProcessorStatus.SUCCEEDED, Key.USER_UPDATE_SUCCESS, new HashMap<>());
             } else {
@@ -183,7 +183,7 @@ public class UserProcessor extends AbstractProcessor {
             UserDao userDao = new UserDao(this.dbSession);
             userDao.lockTable();
             User user = userDao.loadUser(account);
-            if ( user != null && this.httpSessionState.getUserId() == user.getId() ) {
+            if ( user != null && getIdOfLoggedInUser() == user.getId() ) {
                 if ( !isMailUsed(userDao, account, email) ) {
                     user.setUserName(userName);
                     user.setRole(Role.valueOf(roleAsString));
@@ -218,7 +218,7 @@ public class UserProcessor extends AbstractProcessor {
 
     /**
      * is the mail address used? NOTE: this accesses the database
-     * 
+     *
      * @param userDao dao to access the database
      * @param account whose mail address is checked
      * @param email the mail address to ckeck

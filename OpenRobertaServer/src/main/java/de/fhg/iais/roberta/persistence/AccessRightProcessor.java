@@ -22,7 +22,7 @@ public class AccessRightProcessor extends AbstractProcessor {
     private static final Logger LOG = LoggerFactory.getLogger(AccessRightProcessor.class);
 
     public AccessRightProcessor(DbSession dbSession, HttpSessionState httpSessionState) {
-        super(dbSession, httpSessionState);
+        super(dbSession, httpSessionState.getUserId());
     }
 
     /**
