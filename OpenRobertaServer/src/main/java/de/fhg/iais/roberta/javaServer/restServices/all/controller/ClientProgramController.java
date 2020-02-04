@@ -63,11 +63,11 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response saveProgram(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             int userId = httpSessionState.getUserId();
             String robot = getRobot(httpSessionState);
             Long timestamp = dataPart.optLong("timestamp");
@@ -112,11 +112,11 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteProgram(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             int userId = httpSessionState.getUserId();
             String robot = getRobot(httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
@@ -154,11 +154,11 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgram(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() && !dataPart.getString("owner").equals("Roberta") && !dataPart.getString("owner").equals("Gallery") ) {
                 LOG.info("Unauthorized load request");
                 UtilForREST.addErrorInfo(response, Key.USER_ERROR_NOT_LOGGED_IN);
@@ -205,12 +205,12 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgramEntity(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
-        UserProcessor up = new UserProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
+            UserProcessor up = new UserProcessor(dbSession, httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
                 LOG.error("Unauthorized");
                 UtilForREST.addErrorInfo(response, Key.USER_ERROR_NOT_LOGGED_IN);
@@ -250,10 +250,10 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getInfosOfProgramsOfLoggedInUser(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             String robot = getRobot(httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
                 LOG.error("Unauthorized");
@@ -286,10 +286,10 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getInfosOfExamplePrograms(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             String robot = getRobot(httpSessionState);
             int userId = 1;
             JSONArray programInfo = programProcessor.getProgramInfo(userId, robot, userId);
@@ -375,12 +375,12 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response shareProgram(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        UserProcessor userProcessor = new UserProcessor(dbSession, httpSessionState);
-        AccessRightProcessor accessRightProcessor = new AccessRightProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            UserProcessor userProcessor = new UserProcessor(dbSession, httpSessionState);
+            AccessRightProcessor accessRightProcessor = new AccessRightProcessor(dbSession, httpSessionState);
             int userId = httpSessionState.getUserId();
             String robot = getRobot(httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
@@ -421,11 +421,11 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response likeProgram(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        LikeProcessor lp = new LikeProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            LikeProcessor lp = new LikeProcessor(dbSession, httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
                 LOG.error("Unauthorized");
                 UtilForREST.addErrorInfo(response, Key.USER_ERROR_NOT_LOGGED_IN);
@@ -477,16 +477,16 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response shareProgramInGallery(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
-        AccessRightProcessor accessRightProcessor = new AccessRightProcessor(dbSession, httpSessionState);
-        UserProcessor userProcessor = new UserProcessor(dbSession, httpSessionState);
-        ConfigurationProcessor configurationProcessor = new ConfigurationProcessor(dbSession, httpSessionState);
-
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
+            AccessRightProcessor accessRightProcessor = new AccessRightProcessor(dbSession, httpSessionState);
+            UserProcessor userProcessor = new UserProcessor(dbSession, httpSessionState);
+            ConfigurationProcessor configurationProcessor = new ConfigurationProcessor(dbSession, httpSessionState);
+
             int userId = httpSessionState.getUserId();
             String robot = getRobot(httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
@@ -561,13 +561,13 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteSharedProgram(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
-        AccessRightProcessor accessRightProcessor = new AccessRightProcessor(dbSession, httpSessionState);
-        UserProcessor userProcessor = new UserProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
+            AccessRightProcessor accessRightProcessor = new AccessRightProcessor(dbSession, httpSessionState);
+            UserProcessor userProcessor = new UserProcessor(dbSession, httpSessionState);
             int userId = httpSessionState.getUserId();
             String robot = getRobot(httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
@@ -611,10 +611,10 @@ public class ClientProgramController {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response getProgramsFromGallery(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             int userId = httpSessionState.getUserId();
             JSONArray programInfo = programProcessor.getProgramGallery(userId);
             response.put("programNames", programInfo);
@@ -650,11 +650,11 @@ public class ClientProgramController {
     @Produces(MediaType.APPLICATION_JSON)
     @Deprecated
     public Response getProjectRelations(@OraData DbSession dbSession, JSONObject request) {
-        HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
-        JSONObject dataPart = UtilForREST.extractDataPart(request);
-        ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
         JSONObject response = new JSONObject();
         try {
+            HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
+            JSONObject dataPart = UtilForREST.extractDataPart(request);
+            ProgramProcessor programProcessor = new ProgramProcessor(dbSession, httpSessionState);
             int userId = httpSessionState.getUserId();
             String robot = getRobot(httpSessionState);
             if ( !httpSessionState.isUserLoggedIn() ) {
