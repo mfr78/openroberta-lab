@@ -262,4 +262,12 @@ public class ProgramDao extends AbstractDao<Program> {
         }
         return programs;
     }
+
+    /**
+     * create a write lock for the table PROGRAM. Avoid deadlocks, when programs are created or updated. The lock is released implicitly when the session closes
+     */
+    public void lockTable() {
+        this.session.createSqlQuery("lock table PROGRAM read, PROGRAM write");
+    }
+
 }

@@ -1,9 +1,6 @@
 package de.fhg.iais.roberta.persistence;
 
 import java.util.HashMap;
-import java.util.List;
-
-import org.json.JSONArray;
 
 import de.fhg.iais.roberta.persistence.bo.Like;
 import de.fhg.iais.roberta.persistence.bo.Program;
@@ -57,40 +54,6 @@ public class LikeProcessor extends AbstractProcessor {
             setStatus(ProcessorStatus.FAILED, Key.USER_ERROR_NOT_LOGGED_IN, new HashMap<>());
             return null;
         }
-    }
-
-    public Like loadLike(User user, Program program) throws Exception {
-        LikeDao likeDao = new LikeDao(this.dbSession);
-        Like like = likeDao.loadLike(user, program);
-        if ( like != null ) {
-            setStatus(ProcessorStatus.SUCCEEDED, Key.LIKE_GET_ONE_SUCCESS, new HashMap<>());
-            return like;
-        } else {
-            setStatus(ProcessorStatus.FAILED, Key.LIKE_GET_ONE_ERROR_NOT_FOUND, new HashMap<>());
-            return null;
-        }
-    }
-
-    public JSONArray getLikesPerProgram(Program program) {
-        LikeDao likeDao = new LikeDao(this.dbSession);
-        JSONArray likes = new JSONArray();
-        List<Like> likesList = likeDao.loadLikesByProgram(program);
-        for ( Like like : likesList ) {
-            likes.put(like.getUser().getAccount());
-        }
-        setStatus(ProcessorStatus.SUCCEEDED, Key.LIKE_GET_ALL_SUCCESS, new HashMap<>());
-        return likes;
-    }
-
-    public int getNumberOfLikesPerProgram(Program program) {
-        JSONArray likes = getLikesPerProgram(program);
-        return likes.length();
-    }
-
-    public List<Like> getLikesPerUser(User user) {
-        LikeDao likeDao = new LikeDao(this.dbSession);
-        List<Like> likesList = likeDao.loadLikesByUser(user);
-        return likesList;
     }
 
     public void deleteLike(String programName, String robotName, String authorName) throws Exception {

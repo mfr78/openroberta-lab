@@ -241,6 +241,53 @@ public class ProgramProcessor extends AbstractProcessor {
     }
 
     /**
+     * Get information about all the programs owned by the gallery
+     *
+     * @param galleryId the gallery user
+     */
+    
+    public JSONArray getProgramGallery(int userId) {
+        UserDao userDao = new UserDao(this.dbSession);
+        ProgramDao programDao = new ProgramDao(this.dbSession);
+        int galleryId = userDao.loadUser("Gallery").getId();
+        JSONArray programs = programDao.loadGallery(galleryId, userId);
+        Map<String, String> processorParameters = new HashMap<>();
+        processorParameters.put("PROGRAMS_LENGTH", "" + programs.length());
+        setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ALL_SUCCESS, processorParameters);
+        return programs;
+    }
+
+    public JSONArray getProgramEntity(String programName, int ownerId, String robotName, int authorId) {
+    
+        if ( this.httpSessionState.isUserLoggedIn() ) {
+            UserDao userDao = new UserDao(this.dbSession);
+            RobotDao robotDao = new RobotDao(this.dbSession);
+            ProgramDao programDao = new ProgramDao(this.dbSession);
+            User owner = userDao.get(ownerId);
+            Robot robot = robotDao.loadRobot(robotName);
+            User author = userDao.get(authorId);
+            Program program = programDao.load(programName, owner, robot, author);
+            if ( program != null ) {
+                setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ONE_SUCCESS, new HashMap<>());
+                JSONArray prog = new JSONArray();
+                prog.put(program.getRobot().getName());
+                prog.put(program.getName());
+                prog.put(program.getProgramText()); // only needed if we want to show the description of the program
+                prog.put(program.getAuthor().getAccount());
+                prog.put(program.getLastChanged().getTime());
+                prog.put(program.getNumberOfViews());
+                prog.put(0);
+                prog.put(program.getTags());
+                return prog;
+            } else {
+                setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ONE_ERROR_NOT_LOGGED_IN, new HashMap<>());
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /**
      * insert or update a given program owned by a given user. Overwrites an existing program if mayExist == true.
      *
      * @param programName the name of the program. Never null.
@@ -342,53 +389,6 @@ public class ProgramProcessor extends AbstractProcessor {
         } else {
             setStatus(ProcessorStatus.FAILED, Key.PROGRAM_DELETE_ERROR, new HashMap<>());
         }
-    }
-
-    /**
-     * Get information about all the programs owned by the gallery
-     *
-     * @param galleryId the gallery user
-     */
-
-    public JSONArray getProgramGallery(int userId) {
-        UserDao userDao = new UserDao(this.dbSession);
-        ProgramDao programDao = new ProgramDao(this.dbSession);
-        int galleryId = userDao.loadUser("Gallery").getId();
-        JSONArray programs = programDao.loadGallery(galleryId, userId);
-        Map<String, String> processorParameters = new HashMap<>();
-        processorParameters.put("PROGRAMS_LENGTH", "" + programs.length());
-        setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ALL_SUCCESS, processorParameters);
-        return programs;
-    }
-
-    public JSONArray getProgramEntity(String programName, int ownerId, String robotName, int authorId) {
-
-        if ( this.httpSessionState.isUserLoggedIn() ) {
-            UserDao userDao = new UserDao(this.dbSession);
-            RobotDao robotDao = new RobotDao(this.dbSession);
-            ProgramDao programDao = new ProgramDao(this.dbSession);
-            User owner = userDao.get(ownerId);
-            Robot robot = robotDao.loadRobot(robotName);
-            User author = userDao.get(authorId);
-            Program program = programDao.load(programName, owner, robot, author);
-            if ( program != null ) {
-                setStatus(ProcessorStatus.SUCCEEDED, Key.PROGRAM_GET_ONE_SUCCESS, new HashMap<>());
-                JSONArray prog = new JSONArray();
-                prog.put(program.getRobot().getName());
-                prog.put(program.getName());
-                prog.put(program.getProgramText()); // only needed if we want to show the description of the program
-                prog.put(program.getAuthor().getAccount());
-                prog.put(program.getLastChanged().getTime());
-                prog.put(program.getNumberOfViews());
-                prog.put(0);
-                prog.put(program.getTags());
-                return prog;
-            } else {
-                setStatus(ProcessorStatus.FAILED, Key.PROGRAM_GET_ONE_ERROR_NOT_LOGGED_IN, new HashMap<>());
-                return null;
-            }
-        }
-        return null;
     }
 
     public void addOneView(Program program) {

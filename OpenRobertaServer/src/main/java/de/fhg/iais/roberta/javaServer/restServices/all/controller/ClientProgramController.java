@@ -451,7 +451,7 @@ public class ClientProgramController {
     @Path("/like")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response likeProject(@OraData DbSession dbSession, JSONObject request) {
+    public Response likeProgram(@OraData DbSession dbSession, JSONObject request) {
         HttpSessionState httpSessionState = UtilForREST.handleRequestInit(LOG, request);
         JSONObject dataPart = UtilForREST.extractDataPart(request);
         LikeProcessor lp = new LikeProcessor(dbSession, httpSessionState);
