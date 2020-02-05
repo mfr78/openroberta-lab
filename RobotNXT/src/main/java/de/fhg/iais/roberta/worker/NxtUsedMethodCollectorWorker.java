@@ -15,7 +15,7 @@ public class NxtUsedMethodCollectorWorker extends AbstractUsedMethodCollectorWor
      * @return the additional methods
      */
     @Override
-    protected List<Class<? extends Enum<?>>> getAdditionalEnums() {
+    protected List<Class<? extends Enum<?>>> getAdditionalMethodEnums() {
         return Collections.singletonList(NxtMethods.class);
     }
 

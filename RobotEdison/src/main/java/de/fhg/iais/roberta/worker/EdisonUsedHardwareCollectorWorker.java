@@ -1,6 +1,7 @@
 package de.fhg.iais.roberta.worker;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import de.fhg.iais.roberta.bean.UsedHardwareBean;
 import de.fhg.iais.roberta.bean.UsedMethodBean;
@@ -21,9 +22,9 @@ public final class EdisonUsedHardwareCollectorWorker extends AbstractUsedHardwar
         UsedHardwareBean.Builder usedHardwareBeanBuilder = new UsedHardwareBean.Builder();
         UsedMethodBean.Builder usedMethodBeanBuilder = new UsedMethodBean.Builder();
         EdisonUsedHardwareCollectorVisitor visitor = new EdisonUsedHardwareCollectorVisitor(usedHardwareBeanBuilder, usedMethodBeanBuilder, project.getConfigurationAst());
-        ArrayList<ArrayList<Phrase<Void>>> tree = project.getProgramAst().getTree();
+        Iterable<ArrayList<Phrase<Void>>> tree = project.getProgramAst().getTree();
         collectGlobalVariables(tree, visitor);
-        for ( ArrayList<Phrase<Void>> phrases : tree ) {
+        for ( List<Phrase<Void>> phrases : tree ) {
             for ( Phrase<Void> phrase : phrases ) {
                 if ( phrase.getKind().getName().equals("MAIN_TASK") ) {
                     usedHardwareBeanBuilder.setProgramEmpty(phrases.size() == 2);
@@ -34,7 +35,7 @@ public final class EdisonUsedHardwareCollectorWorker extends AbstractUsedHardwar
         }
         UsedHardwareBean usedHardwareBean = usedHardwareBeanBuilder.build();
         project.addWorkerResult("CollectedHardware", usedHardwareBean);
-        UsedMethodBean codeGenSetupBean = usedMethodBeanBuilder.build();
-        project.addWorkerResult("UsedMethodsInHardware", codeGenSetupBean);
+        UsedMethodBean usedMethodBean = usedMethodBeanBuilder.build();
+        project.addWorkerResult("UsedMethodsInHardware", usedMethodBean);
     }
 }

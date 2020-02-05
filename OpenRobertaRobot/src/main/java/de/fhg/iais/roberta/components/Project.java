@@ -16,6 +16,7 @@ import javax.xml.bind.Marshaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.fhg.iais.roberta.bean.OraBean;
 import de.fhg.iais.roberta.blockly.generated.Block;
 import de.fhg.iais.roberta.blockly.generated.BlockSet;
 import de.fhg.iais.roberta.blockly.generated.Instance;
@@ -53,7 +54,7 @@ public final class Project {
     private ProgramAst<Void> program = null;
     private ConfigurationAst configuration = null;
 
-    private final Map<String, Object> workerResults = new HashMap<>();
+    private final Map<String, OraBean> workerResults = new HashMap<>();
 
     private StringBuilder sourceCodeBuilder = new StringBuilder();
     private final StringBuilder indentationBuilder = new StringBuilder();
@@ -129,11 +130,11 @@ public final class Project {
         return this.configuration;
     }
 
-    public Object getWorkerResult(String beanName) {
+    public OraBean getWorkerResult(String beanName) {
         return this.workerResults.get(beanName);
     }
 
-    public void addWorkerResult(String beanName, Object bean) {
+    public void addWorkerResult(String beanName, OraBean bean) {
         this.workerResults.put(beanName, bean);
     }
 

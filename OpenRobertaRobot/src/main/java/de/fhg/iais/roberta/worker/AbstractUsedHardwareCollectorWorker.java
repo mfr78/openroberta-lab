@@ -30,10 +30,10 @@ public abstract class AbstractUsedHardwareCollectorWorker implements IWorker {
     @Override
     public void execute(Project project) {
         UsedHardwareBean.Builder builder = new UsedHardwareBean.Builder();
-        AbstractCollectorVisitor visitor = getVisitor(builder, project);
-        ArrayList<ArrayList<Phrase<Void>>> tree = project.getProgramAst().getTree();
+        AbstractCollectorVisitor visitor = this.getVisitor(builder, project);
+        List<ArrayList<Phrase<Void>>> tree = project.getProgramAst().getTree();
         collectGlobalVariables(tree, visitor);
-        for ( ArrayList<Phrase<Void>> phrases : tree ) {
+        for ( List<Phrase<Void>> phrases : tree ) {
             for ( Phrase<Void> phrase : phrases ) {
                 if ( phrase.getKind().getName().equals("MAIN_TASK") ) {
                     builder.setProgramEmpty(phrases.size() == 2);
@@ -46,7 +46,7 @@ public abstract class AbstractUsedHardwareCollectorWorker implements IWorker {
         project.addWorkerResult("CollectedHardware", bean);
     }
 
-    protected static void collectGlobalVariables(List<ArrayList<Phrase<Void>>> phrasesSet, IVisitor<Void> visitor) {
+    protected static void collectGlobalVariables(Iterable<ArrayList<Phrase<Void>>> phrasesSet, IVisitor<Void> visitor) {
         for ( List<Phrase<Void>> phrases : phrasesSet ) {
             Phrase<Void> phrase = phrases.get(1);
             if ( phrase.getKind().getName().equals("MAIN_TASK") ) {
